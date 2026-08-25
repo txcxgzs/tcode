@@ -1,0 +1,19 @@
+prompt: |
+  Inspect the workspace, add a short HEALTH.md describing how to verify it,
+  and run an appropriate verification command.
+workspace: C:\path\to\project
+modelProfile:
+  baseUrl: https://api.deepseek.com/v1
+  model: deepseek-chat
+  protocol: chat-completions
+  maxOutputTokens: 8192
+  contextBudget: 120000
+setup: []
+grader:
+  - "if (!(Test-Path HEALTH.md)) { throw 'missing HEALTH.md' }"
+timeout: 1800000
+toolTimeout: 120000
+permissionMode: workspace-write
+network: true
+maxTurns: 100
+variant: minimal-v1

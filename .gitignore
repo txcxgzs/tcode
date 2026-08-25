@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-web/
+.tcode/
+.env
+.env.local
+*.log
+.superdesign/
+.zcode/
+ui-bug-screenshots/
+tcode.zip
+*.txt
