@@ -51,8 +51,8 @@ GET /api/health
 ### 列出已配置的 provider
 ```
 GET /api/model-profiles
-→ [{ "id": "txai", "name": "...", "baseUrl": "...", "protocol": "chat-completions",
-     "models": [{ "id": "stealth/ox-alpha" }, ...], ... }]
+→ [{ "id": "<provider-id>", "name": "...", "baseUrl": "...", "protocol": "chat-completions",
+     "models": [{ "id": "<model-id>" }, ...], ... }]
 ```
 `id` 字段在创建 run 时作为 `credentialId` 传入。
 
@@ -81,9 +81,9 @@ body: {
     "prompt": "你的指令",
     "workspace": "C:\\Users\\Administrator\\Desktop\\tcode",
     "modelProfile": {
-      "baseUrl": "https://ai.txcxgzs.com/v1",
+      "baseUrl": "<your-provider-baseUrl>",
       "protocol": "chat-completions",
-      "model": "stealth/ox-alpha"
+      "model": "<model-id>"
     },
     "permissionMode": "workspace-write",   // read-only | workspace-write | danger-full-access
     "sessionId": "<可选,追加到已有会话>",
@@ -94,7 +94,7 @@ body: {
     "setup": [],
     "grader": []
   },
-  "credentialId": "txai",     // 必须与 task.modelProfile 同源
+  "credentialId": "<provider-id>",  // 必须与 task.modelProfile 同源
   "adhd": false               // 可选,附加 ADHD skill 提示
 }
 → 202 { "id": "<run-id>", "status": "queued", ... }
@@ -171,14 +171,14 @@ RUN_ID=$(curl -s -X POST http://127.0.0.1:3080/api/runs \
       "prompt": "列出当前 workspace 下的所有 .ts 文件,并统计每个文件的行数",
       "workspace": "<WORKSPACE>",
       "modelProfile": {
-        "baseUrl": "https://ai.txcxgzs.com/v1",
+        "baseUrl": "<your-provider-baseUrl>",
         "protocol": "chat-completions",
-        "model": "stealth/ox-alpha"
+        "model": "<model-id>"
       },
       "permissionMode": "read-only",
       "maxTurns": 20
     },
-    "credentialId": "txai"
+    "credentialId": "<provider-id>"
   }' | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
 echo "Run: $RUN_ID"

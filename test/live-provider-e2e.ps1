@@ -5,7 +5,8 @@ $secureKey = Read-Host -AsSecureString
 $apiKey = [Runtime.InteropServices.Marshal]::PtrToStringBSTR([Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureKey))
 if ([string]::IsNullOrWhiteSpace($apiKey)) { throw 'Missing API key on stdin' }
 $providerId = 'live-e2e'
-$modelId = 'stealth/ox-alpha'
+$providerUrl = if ($env:TCODE_PROVIDER_URL) { $env:TCODE_PROVIDER_URL } else { 'https://api.example.com/v1' }
+$modelId = if ($env:TCODE_MODEL_ID) { $env:TCODE_MODEL_ID } else { 'model-id' }
 $artifactName = 'tcode-live-provider-e2e.txt'
 $session = $null
 $artifactPath = $null
@@ -23,13 +24,13 @@ function Invoke-Json([string]$Method, [string]$Uri, $Body = $null) {
 
 try {
   $remoteHeaders = @{ Authorization = "Bearer $apiKey" }
-  $remoteModels = Invoke-WebRequest -Method Get -Uri 'https://ai.txcxgzs.com/v1/models' -Headers $remoteHeaders -UseBasicParsing
+  $remoteModels = Invoke-WebRequest -Method Get -Uri "$providerUrl/models" -Headers $remoteHeaders -UseBasicParsing
   $modelPayload = $remoteModels.Content | ConvertFrom-Json
   if (-not ($modelPayload.data | Where-Object { $_.id -eq $modelId })) { throw 'Requested model is not advertised by /models' }
 
   Invoke-Json Put "$Base/api/model-profiles/$providerId" @{
     name = 'Live E2E'
-    baseUrl = 'https://ai.txcxgzs.com/v1'
+    baseUrl = $providerUrl
     protocol = 'chat-completions'
     models = @(@{ id = $modelId; name = $modelId })
   } | Out-Null
@@ -48,7 +49,7 @@ try {
       prompt = "Create exactly one file named $artifactName containing exactly TCODE_LIVE_PROVIDER_OK followed by a newline. Use str_replace_editor for the file change, then use pwsh to verify its exact content. Do not modify any other file."
       workspace = $workspace.path
       modelProfile = @{
-        baseUrl = 'https://ai.txcxgzs.com/v1'
+        baseUrl = $providerUrl
         model = $modelId
         protocol = 'chat-completions'
         maxOutputTokens = 4096

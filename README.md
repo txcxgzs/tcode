@@ -2,7 +2,11 @@
 
 TCode 是一个 Windows 优先的 coding agent harness(编码代理框架):Fastify HTTP 服务 + SQLite trace 存储 + React 前端。模型看到两个工具——一个持久的 `pwsh`(PowerShell)shell 和一个结构化的 `str_replace_editor` 编辑器——通过 Server-Sent Events 流式返回响应。Web UI、权限控制、trace 记录、setup 和 grader 都不进入模型可见的提示词和工具列表。
 
+> **⚠️ 项目状态:实验性,含大量已知问题。** 本项目处于早期开发阶段,存在不少 bug 和待修复的缺陷(包括但不限于前端状态管理、流式渲染、跨会话历史重建、沙箱边界等)。代码未经充分打磨,请勿用于生产环境。欢迎提 issue 反馈问题。
+
 > **致谢**:本项目的核心设计参考了 [DeepSeek Harness (DSH) Minimal](https://github.com/deepseek-ai) 的模型契约——包括最小化的双工具面、权限模式分层、Windows ACL 沙箱后端,以及 `str_replace_editor` 的路径校验逻辑。沙箱部分直接复用了官方的 `@deepseek-ai/dsh-sandbox-windows-acl` 包。系统提示默认沿用 DSH Minimal 的兜底文案。在此向 DSH 团队表示感谢。
+>
+> 项目内置的 [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) 输出风格 skill(MIT 许可,作者 ayghri)用于优化模型输出的可读性,在此向其作者致谢。
 
 ---
 
@@ -61,7 +65,7 @@ npm run dev
 
 ## 最小契约
 
-默认系统提示是 DSH Minimal 兜底文案的原样照搬:`You are a helpful software engineer assistant.` 只能通过服务端 `DSH_SYSTEM_PROMPT` 环境变量显式替换。Chat Completions 和 Responses 两类 provider 收到相同的两个结构化函数 schema:`pwsh({command})` 和 `str_replace_editor({command,path,...})`。自动上下文压缩已禁用。每次请求、响应、工具动作、审批、grader 结果和用量记录都追加到 `.tcode/runs/<id>.jsonl` 并索引到 `.tcode/runs.sqlite`。
+默认系统提示沿用 DSH Minimal 的兜底文案:`You are a helpful software engineer assistant.` 只能通过服务端 `DSH_SYSTEM_PROMPT` 环境变量显式替换。Chat Completions 和 Responses 两类 provider 收到相同的两个结构化函数 schema:`pwsh({command})` 和 `str_replace_editor({command,path,...})`。自动上下文压缩已禁用。每次请求、响应、工具动作、审批、grader 结果和用量记录都追加到 `.tcode/runs/<id>.jsonl` 并索引到 `.tcode/runs.sqlite`。
 
 ## 权限模式
 
@@ -109,7 +113,11 @@ npm run build        # 构建产物到 dist/ 和 dist-web/
 
 TCode is a Windows-first coding agent harness: a Fastify HTTP server, a SQLite trace store, and a React frontend. The model sees exactly two tools — one persistent `pwsh` (PowerShell) shell and one structured `str_replace_editor` — and responses stream back via Server-Sent Events. The Web UI, permissions, tracing, setup, and grading stay outside the model-visible prompt and tool list.
 
+> **⚠️ Project status: experimental, with many known issues.** This project is in early development and contains numerous bugs and unfixed defects (including but not limited to frontend state management, streaming rendering, cross-session history reconstruction, and sandbox boundaries). The code is not production-ready. Issue reports are welcome.
+
 > **Acknowledgement**: The core design of this project is based on the [DeepSeek Harness (DSH) Minimal](https://github.com/deepseek-ai) model contract — including the minimal two-tool surface, layered permission modes, the Windows ACL sandbox backend, and the `str_replace_editor` path-validation logic. The sandbox layer reuses the official `@deepseek-ai/dsh-sandbox-windows-acl` package directly. The default system prompt follows the DSH Minimal fallback verbatim. Credit to the DSH team.
+>
+> The built-in [`i-have-adhd`](https://github.com/ayghri/i-have-adhd) output-style skill (MIT license, by ayghri) is used to improve the readability of model output. Credit to its author.
 
 ### Requirements
 
